@@ -123,4 +123,32 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Trusted Proxies
+    |--------------------------------------------------------------------------
+    |
+    | If your application is behind a load balancer or proxy server, you may
+    | specify the proxy IP addresses that should be trusted. This setting is
+    | used by the TrustProxies middleware.
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES', null),
+
+    'trusted_headers' => env('TRUSTED_HEADERS', null),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Force HTTPS
+    |--------------------------------------------------------------------------
+    |
+    | Set true to redirect HTTP requests to HTTPS. Behind a proxy that
+    | terminates TLS, TRUSTED_PROXIES and TRUSTED_HEADERS must also be set or
+    | the request will still look like plain HTTP and the redirect will loop.
+    |
+    */
+
+    'force_https' => (bool) env('FORCE_HTTPS', false),
+
 ];

@@ -111,8 +111,18 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'hello@webxpresstech.com.ng'),
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
+
+    'inquiries_to' => env('MAIL_INQUIRIES_TO', 'hello@webxpresstech.com.ng'),
+
+    'inquiries_auto_ack' => env('MAIL_INQUIRIES_AUTO_ACK', true),
+
+    'ai_follow_up' => env('MAIL_AI_FOLLOW_UP', true),
+
+    'ai_auto_reply' => env('MAIL_AI_AUTO_REPLY', true),
+
+    'ai_auto_reply_max' => env('MAIL_AI_AUTO_REPLY_MAX', 2),
 
 ];

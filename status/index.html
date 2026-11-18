@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<title>Status - Webxpress Technologies</title>
+<meta name="description" content="Live status for Webxpress Technologies services and scheduled maintenance windows.">
+<style>
+  :root {
+    --navy: #1B2D5F;
+    --navy-soft: #ECEFF7;
+    --red: #E31937;
+    --ink: #101828;
+    --muted: #667085;
+    --line: #E4E7EC;
+    --ok: #16a34a;
+    --warn: #d97706;
+    --bad: #dc2626;
+    --mnt: #1B2D5F;
+    --bg: #F9FAFB;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+
+  header.site {
+    background: var(--navy);
+    color: #fff;
+    padding: 28px 0;
+  }
+  header.site .row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .brand { font-weight: 800; font-size: 20px; letter-spacing: .01em; }
+  .brand em { color: var(--red); font-style: normal; }
+  .pills { margin-top: 16px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; color: #fff;
+  }
+  .pill .dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+  .pill.operational { background: rgba(22,163,74,.9); }
+  .pill.degraded     { background: rgba(217,119,6,.9); }
+  .pill.down         { background: rgba(220,38,38,.9); }
+  .pill.maintenance  { background: rgba(255,255,255,.25); }
+
+  main { padding: 28px 0 60px; }
+  section { margin-top: 34px; }
+  h2 {
+    font-size: 15px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); font-weight: 700; margin-bottom: 14px;
+  }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; margin-bottom: 12px;
+  }
+  .card .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .card h3 { font-size: 16px; font-weight: 700; }
+  .card .when { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.up, .dot.operational { background: var(--ok); }
+  .dot.down, .dot.major { background: var(--bad); }
+  .dot.degraded, .dot.minor { background: var(--warn); }
+  .dot.maintenance { background: var(--mnt); }
+
+  .monitor { display: flex; align-items: center; justify-content: space-between; }
+  .monitor .name { font-weight: 600; }
+  .monitor .state { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; text-transform: capitalize; }
+  .monitor .state b { color: var(--ink); }
+
+  .timeline { list-style: none; margin-top: 12px; padding-left: 4px; }
+  .timeline li { position: relative; padding-left: 22px; padding-bottom: 16px; }
+  .timeline li:before {
+    content: ""; position: absolute; left: 5px; top: 10px; bottom: 0;
+    width: 2px; background: var(--line);
+  }
+  .timeline li:last-child:before { bottom: 70%; }
+  .timeline li .bullet {
+    position: absolute; left: 0; top: 6px; width: 12px; height: 12px;
+    border-radius: 50%; border: 3px solid var(--bg); background: #fff; box-shadow: 0 0 0 1px var(--line);
+  }
+  .timeline li.updateresolved .bullet, .timeline li.updatemonitoring .bullet { background: var(--ok); }
+  .timeline li.updateinvestigating .bullet { background: var(--bad); }
+  .timeline li.updateidentified .bullet { background: var(--warn); }
+  .timeline .t-time { font-size: 12px; color: var(--muted); }
+  .timeline .t-state {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 4px; padding: 1px 6px; margin-left: 6px;
+  }
+  .timeline .t-msg { margin-top: 2px; font-size: 14px; color: var(--ink); }
+
+  .minor-major { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .minor-major b {
+    display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; padding: 1px 7px; border-radius: 4px; margin-right: 8px;
+  }
+  .sev-critical { background: #FEE2E2; color: var(--bad); }
+  .sev-major { background: #FEF3C7; color: var(--warn); }
+  .sev-minor { background: #E0E7FF; color: var(--navy); }
+
+  .empty { color: var(--muted); font-size: 14px; }
+
+  details.past summary { cursor: pointer; font-weight: 600; }
+  details.past summary::-webkit-details-marker { display: none; }
+
+  footer.site {
+    border-top: 1px solid var(--line); padding: 20px 0 40px; color: var(--muted); font-size: 13px;
+  }
+  footer.site .row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  footer h1 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+  footer a { color: var(--navy); text-decoration: none; }
+  #updated { color: var(--muted); }
+  .hostnote { margin-top: 8px; font-size: 12px; color: #98A2B3; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="row">
+      <div class="brand">WEBXPRESS<em>.</em> <span style="font-weight:400;font-size:14px;opacity:.8">— Status</span></div>
+      <a href="https://webxpresstech.com.ng" style="color:#fff;font-size:13px;opacity:.85;text-decoration:underline;">main site &nearr;</a>
+    </div>
+    <div class="pills" id="overall-pill"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="monitors">
+    <h2>Services</h2>
+    <div id="monitors-list"></div>
+  </section>
+
+  <section id="incidents">
+    <h2>Active incidents</h2>
+    <div id="incidents-list"></div>
+  </section>
+
+  <section id="maintenance">
+    <h2>Scheduled maintenance</h2>
+    <div id="maintenance-list"></div>
+  </section>
+
+  <section id="history">
+    <h2>Past incidents</h2>
+    <div id="history-list"></div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <h1>Webxpress Technologies status</h1>
+    <div class="row">
+      <span>Data updated <span id="updated">pending</span></span>
+      <span class="hostnote">This page is served separately from the main site, so it stays up when the main site does not.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  function el(tag, attrs, html) {
+    var node = document.createElement(tag);
+    if (attrs) for (var k in attrs) node.setAttribute(k, attrs[k]);
+    if (html !== undefined) node.innerHTML = html;
+    return node;
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  var OVERALL = {
+    operational: ["All systems operational", "operational"],
+    degraded:    ["Degraded performance",    "degraded"],
+    down:        ["Service disruption",      "down"],
+    maintenance: ["Scheduled maintenance",   "maintenance"]
+  };
+
+  function fmtUTC(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso);
+    return d.toUTCString().replace("GMT", "UTC");
+  }
+
+  function fmtLocal(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+    });
+  }
+
+  function stateTag(state) {
+    return '<span class="t-state">' + esc(state) + "</span>";
+  }
+
+  function renderOverall(data) {
+    var label = OVERALL[data.overall] || OVERALL.operational;
+    document.getElementById("overall-pill").appendChild(
+      el("span", { class: "pill " + label[1] },
+        '<span class="dot"></span>' + esc(label[0]))
+    );
+  }
+
+  function renderMonitors(monitors) {
+    var box = document.getElementById("monitors-list");
+    if (!monitors || !monitors.length) {
+      box.appendChild(el("p", { class: "empty" }, "No monitored services yet."));
+      return;
+    }
+    monitors.forEach(function (m) {
+      box.appendChild(el("div", { class: "card monitor" },
+        '<span class="name">' + esc(m.name) + "</span>" +
+        '<span class="state"><span class="dot ' + esc(m.status || "up") + '"></span><b>' + esc(m.status || "up") + "</b></span>"
+      ));
+    });
+  }
+
+  function incidentCard(inc, open) {
+    var card = el("div", { class: "card" });
+    var top = el("div", { class: "top" });
+    top.appendChild(el("div", null,
+      "<h3>" + esc(inc.title) + "</h3>" +
+      '<div class="when"><span class="sev-' + esc(inc.severity || "minor") + '">' + esc(inc.severity || "minor") + "</span> started " + esc(fmtUTC(inc.started_at)) + (open ? "" : " - resolved " + esc(fmtUTC(inc.resolved_at))) + "</div>"
+    ));
+    card.appendChild(top);
+
+    if (open || (inc.updates && inc.updates.length)) {
+      var ul = el("ul", { class: "timeline" });
+      (open ? inc.updates : inc.updates).slice().reverse().forEach(function (u) {
+        var li = el("li", { class: "update" + esc((u.status || "").toLowerCase()) });
+        li.appendChild(el("span", { class: "bullet" }, ""));
+        li.appendChild(el("div", { class: "t-time" }, esc(fmtUTC(u.time)) + stateTag(u.status || "")));
+        li.appendChild(el("div", { class: "t-msg" }, esc(u.message)));
+        ul.appendChild(li);
+      });
+      card.appendChild(ul);
+    }
+    return card;
+  }
+
+  function renderIncidents(incidents) {
+    var box = document.getElementById("incidents-list");
+    var open = (incidents || []).filter(function (i) { return i.status !== "resolved"; });
+    if (!open.length) {
+      box.appendChild(el("p", { class: "empty" }, "No ongoing incidents."));
+      return;
+    }
+    open.forEach(function (inc) { box.appendChild(incidentCard(inc, true)); });
+  }
+
+  function renderMaintenance(list) {
+    var box = document.getElementById("maintenance-list");
+    var upcoming = (list || []).filter(function (m) {
+      return !m.cancelled && new Date(m.ends_at).getTime() > Date.now();
+    });
+    if (!upcoming.length) {
+      box.appendChild(el("p", { class: "empty" }, "No scheduled maintenance."));
+      return;
+    }
+    upcoming.forEach(function (m) {
+      var active = Date.now() >= new Date(m.starts_at).getTime();
+      box.appendChild(el("div", { class: "card" },
+        "<h3>" + esc(m.title) + (active ? ' <span class="t-state">in progress</span>' : "") + "</h3>" +
+        '<div class="when">' + esc(fmtLocal(m.starts_at)) + " &rarr; " + esc(fmtLocal(m.ends_at)) + (m.cancelled ? " (cancelled)" : "") + "</div>" +
+        (m.message ? '<p class="t-msg" style="margin-top:6px">' + esc(m.message) + "</p>" : "")
+      ));
+    });
+  }
+
+  function renderHistory(incidents) {
+    var box = document.getElementById("history-list");
+    var done = (incidents || []).filter(function (i) { return i.status === "resolved"; });
+    if (!done.length) {
+      box.appendChild(el("p", { class: "empty" }, "No past incidents on record."));
+      return;
+    }
+    done.forEach(function (inc) {
+      var det = el("details", { class: "card past" });
+      det.appendChild(el("summary", null,
+        esc(inc.title) + ' &nbsp;<span class="when" style="font-weight:400">' +
+        esc(fmtLocal(inc.started_at)) + " &rarr; " + esc(fmtLocal(inc.resolved_at)) + "</span>"
+      ));
+      det.appendChild(el("div", null, incidentCard(inc, false).innerHTML));
+      box.appendChild(det);
+    });
+  }
+
+  function mount() {
+    fetch("./data/status.json", { cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw new Error("status.json " + r.status); return r.json(); })
+      .then(function (data) {
+        renderOverall(data);
+        renderMonitors(data.monitors);
+        renderIncidents(data.incidents);
+        renderMaintenance(data.maintenance);
+        renderHistory(data.incidents);
+        document.getElementById("updated").textContent = fmtLocal(data.updated_at);
+      })
+      .catch(function (err) {
+        [document.getElementById("overall-pill"),
+         document.getElementById("monitors-list"),
+         document.getElementById("incidents-list"),
+         document.getElementById("maintenance-list"),
+         document.getElementById("history-list")]
+          .forEach(function (box) {
+            box.textContent = "";
+            box.appendChild(el("p", { class: "empty" }, "Status data is unavailable right now. Check back shortly."));
+          });
+        document.getElementById("updated").textContent = "unavailable";
+        console.warn("status.json unavailable:", err);
+      });
+  }
+
+  mount();
+})();
+</script>
+</body>
+</html>

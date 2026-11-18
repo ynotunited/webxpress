@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'ai' => [
+        'base_url' => env('AI_API_URL', 'https://openrouter.ai/api/v1'),
+        'api_key' => env('AI_API_KEY'),
+        'model' => env('AI_MODEL', 'anthropic/claude-3.5-haiku'),
+    ],
+
+    'paystack' => [
+        'public_key' => env('PAYSTACK_PUBLIC_KEY'),
+        'secret_key' => env('PAYSTACK_SECRET_KEY'),
+        'base_url' => env('PAYSTACK_BASE_URL', 'https://api.paystack.co'),
+    ],
+
 ];

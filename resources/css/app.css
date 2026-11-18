@@ -1,11 +1,1030 @@
 @import 'tailwindcss';
+@import './fonts.css';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* ============================================================
+   WEBXPRESS TECHNOLOGIES — DESIGN SYSTEM
+   Brand: Navy #1B2D5F | Red #E31937 | Plus Jakarta Sans
+   Mobile-first, no vibe-coded patterns
+   ============================================================ */
 
+/* --- THEME TOKENS ----------------------------------------- */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+  /* Brand Colors */
+  --color-navy-900: #0F1A35;
+  --color-navy-800: #142148;
+  --color-navy-700: #182658;
+  --color-navy: #1B2D5F;
+  --color-navy-600: #243874;
+  --color-navy-500: #2d4a96;
+
+  --color-red-700: #9b1026;
+  --color-red-600: #C91527;
+  --color-red: #E31937;
+  --color-red-400: #f04060;
+
+  --color-gray-50: #F9F9F9;
+  --color-gray-100: #F5F5F5;
+  --color-gray-200: #E5E5E5;
+  --color-gray-300: #CCCCCC;
+  --color-gray-400: #9A9A9A;
+  --color-gray-500: #6A6A6A;
+  --color-gray-600: #4A4A4A;
+  --color-gray-700: #2E2E2E;
+  --color-gray-800: #1E1E1E;
+  --color-gray-900: #111111;
+
+  /* Accent Colors */
+  --color-teal: #0FA99D;
+  /* --color-teal at #0FA99D is only 2.92:1 on white, which is below the 4.5:1
+     WCAG AA needs for body text. It stays as the brand fill for decorative
+     dots and shapes; anything that has to be *read* uses this step instead
+     (4.80:1 on white, 5.20:1 against white text on teal). */
+  --color-teal-700: #0A8078;
+  --color-gold: #D4A574;
+
+  /* Brand red on the navy surfaces. #E31937 is 4.71:1 on white but only
+     2.81:1 on #1B2D5F, so a red glyph or focus ring on a navy panel was
+     effectively invisible. These are the same red carried lighter for dark
+     backgrounds: 5.27:1 on navy-800, 4.45:1 on navy, 5.79:1 on navy-900. */
+  --color-red-on-dark: #FF5C7A;
+
+  /* Control borders. #CCCCCC is 1.61:1 and #E5E5E5 is 1.20:1 against white
+     and off-white, so a form field boundary could not be told from its own
+     background. WCAG 1.4.11 wants 3:1 for anything that identifies a control;
+     this step is 3.36:1 on white and still reads as a quiet hairline. */
+  --color-control-border: #8C8C8C;
+
+  /* Typography Scale */
+  --font-family-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-family-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: 'Courier New', monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-6xl: 3.75rem;
+  --font-size-7xl: 4.5rem;
+
+  /* Spacing */
+  --spacing-section: 5rem;
+  --spacing-section-lg: 7.5rem;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.10);
+  --shadow-nav: 0 1px 0 rgba(0,0,0,0.08);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* --- BASE STYLES ------------------------------------------- */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #4A4A4A;
+    background-color: #FFFFFF;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    color: #1B2D5F;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    /* Anchor jumps are motion too. */
+    html { scroll-behavior: auto !important; }
+
+    /* Scroll-reveal content is opacity:0 until JS adds .visible; without
+       JS (or with motion suppressed) it must not stay invisible. */
+    .animate-on-scroll {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}
+
+/* --- COMPONENTS -------------------------------------------- */
+@layer components {
+
+  /* Container */
+  .container-wx {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-wx {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container-wx {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  /* Section spacing */
+  .section-padding {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  /* The homepage stacks 8+ full-height sections; skipping layout and paint
+     for everything below the fold is the cheapest rendering win available.
+     contain-intrinsic-size keeps the scrollbar honest while skipped. */
+  .section-padding {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+
+  @media (min-width: 1024px) {
+    .section-padding {
+      padding-top: 7.5rem;
+      padding-bottom: 7.5rem;
+    }
+  }
+
+  /* ---- BUTTONS ------------------------------------------ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    white-space: nowrap;
+    min-height: 44px; /* Touch target */
+  }
+
+  /* Long CTA labels ("Tell us what is stuck") overflow a 320px viewport
+     with nowrap plus 1.5rem side padding. */
+  @media (max-width: 400px) {
+    .btn {
+      white-space: normal;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+  }
+
+  /* Focus styling lives in the single :focus-visible rule further down. A
+     component-level copy of it was here and could drift from that one. */
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  /* Primary CTA — Red */
+  .btn-primary {
+    background-color: #E31937;
+    color: #FFFFFF;
+    border-color: #E31937;
+  }
+
+  .btn-primary:hover {
+    background-color: #C91527;
+    border-color: #C91527;
+  }
+
+  /* Secondary — Navy */
+  .btn-secondary {
+    background-color: #1B2D5F;
+    color: #FFFFFF;
+    border-color: #1B2D5F;
+  }
+
+  .btn-secondary:hover {
+    background-color: #0F1A35;
+    border-color: #0F1A35;
+  }
+
+  /* Ghost — Navy outline */
+  .btn-ghost {
+    background-color: transparent;
+    color: #1B2D5F;
+    border-color: #1B2D5F;
+  }
+
+  .btn-ghost:hover {
+    background-color: #F5F5F5;
+  }
+
+  /* Ghost white — for dark backgrounds */
+  .btn-ghost-white {
+    background-color: transparent;
+    color: #FFFFFF;
+    border-color: rgba(255,255,255,0.6);
+  }
+
+  .btn-ghost-white:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-color: #FFFFFF;
+  }
+
+  /* ---- CARDS -------------------------------------------- */
+  .card {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1),
+                transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+  }
+
+  /* ---- TYPOGRAPHY ---------------------------------------- */
+  .heading-display {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #1B2D5F;
+  }
+
+  .heading-1 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: #1B2D5F;
+  }
+
+  .heading-2 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: #1B2D5F;
+  }
+
+  .heading-3 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-weight: 700;
+    line-height: 1.3;
+    color: #1B2D5F;
+  }
+
+  .body-lg {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: #4A4A4A;
+  }
+
+  .body-base {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #4A4A4A;
+  }
+
+  .label-sm {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6A6A6A;
+  }
+
+  /* Red accent bar used in headings */
+  .accent-bar {
+    display: inline-block;
+    width: 2.5rem;
+    height: 3px;
+    background-color: #E31937;
+    border-radius: 2px;
+  }
+
+  /* ---- EDITORIAL COPY ------------------------------------
+     Applied to markup that comes out of a rich text field, so the
+     design system styles it rather than the browser defaults.
+
+     Hand-written rather than pulled from @tailwindcss/typography: the
+     type scale, brand navy, and heading rhythm here have to match
+     .heading-1 / .body-lg above, which a generic plugin stylesheet
+     would not. Scoped to the elements the sanitizer allows, so no
+     rule below can resurrect a tag the sanitizer would have removed.
+     ---------------------------------------------------------- */
+  .prose-wx {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: #4A4A4A;
+    /* Editors paste URLs and email addresses; an unbreakable token would
+       force the whole page to scroll sideways on a phone. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .prose-wx > * + * {
+    margin-top: 1.15em;
+  }
+
+  .prose-wx > p {
+    line-height: 1.75;
+  }
+
+  .prose-wx > h2 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: #1B2D5F;
+    margin-top: 2em;
+  }
+
+  .prose-wx > h3 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #1B2D5F;
+    margin-top: 1.75em;
+  }
+
+  .prose-wx > h4,
+  .prose-wx > h5,
+  .prose-wx > h6 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #1B2D5F;
+    margin-top: 1.5em;
+  }
+
+  .prose-wx > ul,
+  .prose-wx > ol {
+    padding-left: 1.25rem;
+  }
+
+  .prose-wx > ul {
+    list-style: disc;
+  }
+
+  .prose-wx > ol {
+    list-style: decimal;
+  }
+
+  .prose-wx li + li {
+    margin-top: 0.5em;
+  }
+
+  .prose-wx > blockquote {
+    border-left: 3px solid #E31937;
+    padding-left: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: #1B2D5F;
+  }
+
+  .prose-wx a {
+    color: #1B2D5F;
+    text-decoration: underline;
+    text-decoration-color: #E31937;
+    text-underline-offset: 3px;
+  }
+
+  .prose-wx a:hover {
+    color: #E31937;
+  }
+
+  .prose-wx strong {
+    font-weight: 700;
+    color: #1E1E1E;
+  }
+
+  .prose-wx code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    background-color: #F5F5F5;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+  }
+
+  .prose-wx pre {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    background-color: #0F1A35;
+    color: #F9F9F9;
+    border-radius: 10px;
+    padding: 1.25rem;
+    overflow-x: auto;
+  }
+
+  .prose-wx pre code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+  }
+
+  .prose-wx hr {
+    border: 0;
+    border-top: 1px solid #E5E5E5;
+    margin-block: 2.5em;
+  }
+
+  .prose-wx img {
+    border-radius: 12px;
+    width: 100%;
+    height: auto;
+  }
+
+  .prose-wx figcaption {
+    font-size: 0.8125rem;
+    color: #5B6270;
+    margin-top: 0.6em;
+  }
+
+  /* An editor-authored table is as likely to be wide as not; the sanitizer
+     allows <table>, so scroll it rather than the whole page. */
+  .prose-wx table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .prose-wx th,
+  .prose-wx td {
+    border: 1px solid #E5E5E5;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .prose-wx th {
+    background-color: #F5F5F5;
+    font-weight: 700;
+    color: #1B2D5F;
+  }
+
+  /* ---- FORMS -------------------------------------------- */
+  .form-input {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-control-border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #1E1E1E;
+    transition: border-color 150ms ease;
+    min-height: 44px; /* Touch target */
+  }
+
+  /* The ring comes from the global :focus-visible rule. Suppressing it here
+     and replacing it with a border-colour swap meant a keyboard user got a
+     thinner indicator than a mouse user, on a control whose border was
+     already below the 3:1 that 1.4.11 requires. */
+  .form-input:focus-visible {
+    border-color: #E31937;
+  }
+
+  .form-input::placeholder {
+    color: #5B6270;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2E2E2E;
+    margin-bottom: 0.375rem;
+  }
+
+  .form-label .required {
+    color: #E31937;
+    margin-left: 2px;
+  }
+
+  /* ---- DIVIDER ------------------------------------------ */
+  .divider {
+    border: none;
+    border-top: 1px solid #F5F5F5;
+    margin: 2rem 0;
+  }
+
+  /* ---- NAVIGATION --------------------------------------- */
+  .nav-link {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #1B2D5F;
+    padding: 0.375rem 0;
+    position: relative;
+    transition: color 150ms ease;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #E31937;
+    transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-link:hover {
+    color: #E31937;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  .nav-link.active {
+    color: #E31937;
+  }
+
+  .nav-link.active::after {
+    width: 100%;
+  }
+
+  /* ---- SECTION LABEL ------------------------------------ */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ---- SKELETON LOADER ---------------------------------- */
+  .skeleton {
+    background: linear-gradient(90deg, #F5F5F5 25%, #ECECEC 50%, #F5F5F5 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ---- SCROLL ANIMATIONS -------------------------------- */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger */
+  .animate-on-scroll[data-delay="1"] { transition-delay: 100ms; }
+  .animate-on-scroll[data-delay="2"] { transition-delay: 200ms; }
+  .animate-on-scroll[data-delay="3"] { transition-delay: 300ms; }
+  .animate-on-scroll[data-delay="4"] { transition-delay: 400ms; }
+
+  /* --- FOCUS INDICATOR ---------------------------------------
+     One rule, so there is a single place that decides what a keyboard focus
+     ring looks like.
+
+     The ring is two concentric bands with no gap between them: brand red
+     inside, white outside. A red outline on its own clears 3:1 against white
+     but only reaches 2.81:1 against the navy panels, so on every dark section
+     of this site the indicator was technically present and practically
+     invisible. Because the white band sits outside the red, the edge the eye
+     actually reads is 13.2:1 against navy, and on light surfaces the white
+     band vanishes while the red band still shows at 4.7:1. That satisfies
+     WCAG 1.4.11 on both without needing a dark-mode override per component.
+
+     Components must not override this. The brand used to spread
+     `focus-visible:outline-*` utilities across templates, which meant each one
+     re-decided the ring colour and several of them landed on the invisible
+     red-on-navy case.
+  */
+  :focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #E31937;
+  }
+
+  /* The scroll-reveal transition animates opacity, and a focus ring drawn
+     around a still-fading element is hard to follow. Tabbing into an
+     unrevealed section reveals it at once instead of dimming the thing the
+     user just moved to. */
+  .animate-on-scroll:focus-within {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---- GLOBAL HEADER ------------------------------------ */
+  /* Hide Alpine-managed elements until JS bootstraps */
+  [x-cloak] {
+    display: none !important;
+  }
+
+  /* Floating capsule: rests transparent over content, glass + shadow once scrolled */
+  .nav-capsule {
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid transparent;
+    box-shadow: none;
+  }
+
+  .nav-capsule-scrolled {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(27, 45, 95, 0.12);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset,
+                0 24px 60px -24px rgba(15, 26, 53, 0.35);
+  }
+
+  /* Staggered entrance choreography (--stage drives delay) */
+  .nav-enter {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: nav-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--stage, 0) * 60ms);
+    will-change: transform, opacity;
+  }
+
+  @keyframes nav-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Pulsing live dot on the logo */
+  .nav-live-dot {
+    animation: dot-pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.55; transform: scale(0.82); }
+  }
+
+  /* Pill links: animated underline sweep + color shift */
+  .nav-pill-link {
+    color: #1B2D5F;
+    transition: color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-pill-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    width: 60%;
+    height: 2px;
+    border-radius: 2px;
+    background: #E31937;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-pill-link:hover {
+    color: #E31937;
+  }
+
+  .nav-pill-link:hover::after,
+  .nav-pill-link.active::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  .nav-pill-link.active {
+    color: #1B2D5F;
+    background-color: rgba(27, 45, 95, 0.06);
+  }
+
+  /* CTA shine sweep */
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    transform: skewX(-20deg);
+    transition: left 650ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-shine:hover::before {
+    left: 120%;
+  }
+
+  /* Scroll progress hairline (progressive enhancement; hidden via Alpine until scrolled) */
+  .nav-progress {
+    height: 3px;
+    opacity: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: nav-progress-fill linear;
+    animation-timeline: scroll(root);
+    will-change: transform, opacity;
+  }
+
+  @keyframes nav-progress-fill {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  /* Mobile overlay menu item stagger */
+  .menu-item {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 55ms),
+                transform 500ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 55ms);
+  }
+
+  .menu-open .menu-item {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Reduced motion: collapse choreography */
+  @media (prefers-reduced-motion: reduce) {
+    .nav-enter,
+    .menu-item {
+      opacity: 1 !important;
+      transform: none !important;
+      animation: none !important;
+    }
+
+    .nav-live-dot,
+    .nav-progress {
+      animation: none !important;
+    }
+
+    .nav-progress {
+      transform: scaleX(0);
+    }
+
+    .btn-shine::before {
+      display: none;
+    }
+
+    .nav-capsule,
+    .nav-capsule-scrolled {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+
+  /* Reduced transparency: solid surfaces instead of glass */
+  @media (prefers-reduced-transparency: reduce) {
+    .nav-capsule,
+    .nav-capsule-scrolled {
+      background: #FFFFFF;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+}
+
+.wx-cinematic-footer { position: relative; overflow: hidden; background: #0f1a35; color: #fff; font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; opacity: 0; transform: translateY(32px); clip-path: inset(8% 0 0); transition: opacity .8s ease, transform .8s ease, clip-path .8s ease; }
+.wx-cinematic-footer.is-revealed { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+.wx-footer-marquee { position: relative; overflow: hidden; border-top: 1px solid rgba(255,255,255,.12); border-bottom: 1px solid rgba(255,255,255,.12); background: #142148; padding: .9rem 0; transform: rotate(-1deg) scale(1.03); }
+.wx-footer-marquee div { width: max-content; animation: wx-footer-marquee 32s linear infinite; color: rgba(255,255,255,.62); font-size: .7rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; }
+.wx-footer-marquee span { margin: 0 1.25rem; color: var(--color-red-on-dark); }
+@keyframes wx-footer-marquee { to { transform: translateX(-50%); } }
+.wx-footer-inner { position: relative; z-index: 1; }
+.wx-footer-cta { padding: 8rem 0 7rem; }
+.wx-footer-label { color: rgba(255,255,255,.7); }
+.wx-footer-cta h2 { max-width: 850px; margin: 1.5rem 0 2.5rem; color: #fff; font-size: clamp(2.6rem, 5.5vw, 5.8rem); font-weight: 800; line-height: 1; letter-spacing: 0; }
+.wx-footer-button { display: inline-flex; align-items: center; gap: 2rem; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 1rem 1.25rem 1rem 1.5rem; color: #fff; font-size: .9rem; font-weight: 700; transition: background-color .2s, border-color .2s, transform .2s; }
+/* The arrow disc carries a white glyph, so the disc itself has to clear
+   4.5:1. #ed1738 only reaches 4.39:1 with white text on it; the red-600
+   brand step reaches 5.80:1. */
+.wx-footer-button span { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border-radius: 50%; background: #C91527; }
+.wx-footer-button:hover { border-color: var(--color-red-on-dark); transform: translateY(-3px); }
+.wx-footer-links { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 4rem; border-top: 1px solid rgba(255,255,255,.14); padding: 4rem 0; }
+.wx-footer-links p, .wx-footer-links span { color: rgba(255,255,255,.58); font-size: .85rem; line-height: 1.7; }
+/* White text on the navy footer needs at least 4.5:1 (WCAG 1.4.3). The
+   alpha steps below were tuned against #1B2D5F:
+     0.42 -> 3.60:1  FAIL     0.52 -> 4.72:1  pass
+     0.50 -> 4.48:1  borderline
+     0.55 -> 5.11:1  pass     0.58 -> 5.50:1  pass
+     0.62 -> 6.03:1  pass     0.75 -> 8.14:1  pass
+   Section headings and the footer baseline sat at 0.42 and failed. */
+.wx-footer-links h3 { margin: 0 0 1.25rem; color: rgba(255,255,255,.58); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; }
+.wx-footer-links > div > a:not(:first-child), .wx-footer-links > div > span { display: block; margin: .7rem 0; color: rgba(255,255,255,.75); font-size: .9rem; transition: color .2s; }
+.wx-footer-links > div > a:hover { color: #fff; }
+.wx-footer-socials { display: flex; gap: .6rem; margin-top: 1.5rem; }
+.wx-footer-socials a { display: grid; width: 2.2rem; height: 2.2rem; place-items: center; border: 1px solid rgba(255,255,255,.18); border-radius: 50%; color: rgba(255,255,255,.75); font-size: .7rem; font-weight: 700; transition: background-color .2s, color .2s; }
+.wx-footer-socials a:hover { background: #C91527; color: #fff; }
+.wx-footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid rgba(255,255,255,.14); padding: 1.5rem 0 2rem; color: rgba(255,255,255,.58); font-size: .72rem; }
+.wx-footer-top { display: grid; width: 2.6rem; height: 2.6rem; place-items: center; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; color: #fff; transition: background-color .2s, transform .2s; }
+.wx-footer-top:hover { background: #C91527; transform: translateY(-3px); }
+@media (max-width: 700px) { .wx-footer-cta { padding: 6rem 0 5rem; } .wx-footer-links { grid-template-columns: 1fr 1fr; gap: 3rem 1.5rem; } .wx-footer-links > div:first-child { grid-column: 1 / -1; } .wx-footer-bottom { align-items: flex-start; flex-wrap: wrap; } .wx-footer-top { margin-left: auto; } }
+@media (prefers-reduced-motion: reduce) { .wx-cinematic-footer { opacity: 1; transform: none; clip-path: none; transition: none; } .wx-footer-marquee div { animation: none; } }
+
+/* Reference footer composition: a centered action panel with the wordmark behind it. */
+.wx-cinematic-footer { min-height: 100svh; display: flex; flex-direction: column; justify-content: space-between; background: #1b2d5f; }
+.wx-footer-grid { position: absolute; inset: 0; opacity: .24; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom, transparent, #000 20%, #000 82%, transparent); }
+.wx-footer-wordmark { position: absolute; left: 50%; bottom: 1.5rem; z-index: 0; transform: translateX(-50%); color: transparent; font-size: clamp(8rem, 25vw, 25rem); font-weight: 900; line-height: .7; letter-spacing: -.08em; white-space: nowrap; pointer-events: none; -webkit-text-stroke: 1px rgba(255,255,255,.07); background: linear-gradient(180deg, rgba(255,255,255,.09), transparent 65%); -webkit-background-clip: text; background-clip: text; }
+.wx-footer-center { position: relative; z-index: 2; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; width: min(100%, 900px); margin: auto; padding: 7rem 1.5rem 9rem; text-align: center; }
+.wx-footer-center h2 { flex-basis: 100%; margin: 0 0 2.5rem; color: #f8f8f8; font-size: clamp(3.2rem, 7vw, 6.5rem); font-weight: 800; line-height: .95; letter-spacing: -.04em; }
+.wx-footer-pill { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: .7rem 1.5rem; color: rgba(255,255,255,.62); font-size: .8rem; transition: border-color .2s, background-color .2s, color .2s, transform .2s; }
+.wx-footer-pill:hover { border-color: rgba(237,23,56,.8); background: rgba(237,23,56,.14); color: #fff; transform: translateY(-2px); }
+.wx-footer-pill-primary { min-width: 220px; min-height: 64px; padding: 1rem 2rem; color: #f8f8f8; font-size: .95rem; font-weight: 700; }
+/* Brand red as a foreground on navy. #ed1738 is 3.01:1 here, under the 4.5:1
+   body-text threshold; --color-red-on-dark is 4.45:1 on navy and 5.79:1 on
+   navy-900. */
+.wx-footer-pill-primary span { color: var(--color-red-on-dark); margin-right: .7rem; font-size: 1.2rem; }
+.wx-footer-secondary { display: flex; flex-basis: 100%; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+.wx-footer-secondary .wx-footer-pill { min-width: 130px; }
+.wx-footer-bottom { position: relative; z-index: 2; width: min(100% - 3rem, 1100px); margin: 0 auto; border-top: 1px solid rgba(255,255,255,.12); padding: 1.2rem 0 2rem; }
+.wx-footer-brand { display: flex; align-items: center; gap: 1.5rem; color: rgba(255,255,255,.52); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; }
+.wx-footer-brand img { width: 120px; height: auto; }
+.wx-footer-credit { position: static; margin-left: auto; color: rgba(255,255,255,.52); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.wx-footer-credit span { color: var(--color-red-on-dark); font-size: 1rem; margin: 0 .25rem; }
+.wx-footer-top { position: absolute; right: 0; bottom: 1rem; }
+@media (max-width: 700px) { .wx-footer-center { padding: 6rem 1rem 9rem; } .wx-footer-center h2 { font-size: clamp(3rem, 15vw, 5rem); } .wx-footer-pill-primary { min-width: 0; width: 100%; } .wx-footer-secondary { gap: .6rem; } .wx-footer-secondary .wx-footer-pill { min-width: 0; } .wx-footer-brand { flex-direction: column; align-items: flex-start; gap: .75rem; padding-right: 3rem; } .wx-footer-credit { position: static; transform: none; margin-top: 1rem; } .wx-footer-top { bottom: 2rem; } }
+
+.wx-major-cta { position: relative; overflow: hidden; background: #1b2d5f; color: #fff; }
+.wx-major-cta::before { content: ''; position: absolute; inset: 0; opacity: .22; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 72px 72px; mask-image: linear-gradient(90deg, #000, transparent 82%); }
+.wx-major-cta::after { content: ''; position: absolute; right: -8rem; bottom: -16rem; width: 34rem; height: 34rem; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; pointer-events: none; }
+.wx-major-cta .container-wx { position: relative; z-index: 1; }
+.wx-major-cta .section-label { color: rgba(255,255,255,.72); }
+.wx-major-cta .heading-display { color: #fff; }
+.wx-major-cta .body-lg { color: rgba(255,255,255,.72); }
+.wx-major-cta .btn-ghost { border-color: rgba(255,255,255,.55); color: #fff; }
+.wx-major-cta .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,.1); }
+.wx-major-cta-note { margin-top: 1.25rem; color: rgba(255,255,255,.52); font-size: .78rem; }
+.wx-client-marquee { min-width: 0; overflow: hidden; outline: none; }
+.wx-client-track { display: flex; width: max-content; align-items: center; gap: 2.5rem; animation: wx-client-scroll 36s linear infinite; }
+.wx-client-marquee:hover .wx-client-track, .wx-client-marquee:focus .wx-client-track { animation-play-state: paused; }
+  .wx-client-logo { display: flex; width: 8.5rem; height: 3.25rem; flex: 0 0 8.5rem; align-items: center; justify-content: center; opacity: .85; filter: grayscale(1); transition: opacity .2s, filter .2s; }
+.wx-client-logo:hover { opacity: 1; filter: grayscale(0); }
+.wx-client-logo img { display: block; width: auto; max-width: 100%; height: 2.5rem; object-fit: contain; }
+  .wx-client-logo-text { color: #6A6A6A; font-size: 1rem; font-weight: 700; }
+@keyframes wx-client-scroll { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@media (max-width: 640px) { .wx-client-track { gap: 1.25rem; } .wx-client-logo { width: 7rem; flex-basis: 7rem; } }
+@media (prefers-reduced-motion: reduce) { .wx-client-track { animation: none; transform: none; flex-wrap: wrap; width: 100%; } }
+
+/* Client voices — a fixed set per page, paged with back/forward controls.
+   The previous implementation was an infinite marquee: a duplicated track
+   translated across the viewport forever, which meant the section grew with
+   every published review, put two copies of each quote in the DOM, and moved
+   text out from under anyone reading it. Nothing here animates on its own now,
+   so there is no reduced-motion override to add — motion only happens when
+   someone presses a button, and it is a 150ms opacity change. */
+.wx-voices-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 1023px) { .wx-voices-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .wx-voices-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Without JavaScript nothing is hidden, so the pager is absent and the cards
+   simply stack. min-height keeps the ragged quote lengths from making a set
+   look broken. */
+.wx-testimonial-card { display: flex; min-height: 230px; flex-direction: column; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; padding: 1.5rem; box-shadow: 0 8px 24px rgba(15,26,53,.06); }
+.wx-testimonial-card blockquote { display: flex; gap: .65rem; }
+.wx-testimonial-card blockquote > span { color: #e31937; font-size: 2.25rem; line-height: .8; }
+.wx-testimonial-card blockquote p { color: #374151; font-size: .88rem; line-height: 1.6; }
+.wx-testimonial-card figcaption { border-top: 1px solid #eef0f3; padding-top: .85rem; }
+.wx-testimonial-card strong, .wx-testimonial-card small { display: block; }
+.wx-testimonial-card strong { color: #1b2d5f; font-size: .82rem; }
+.wx-testimonial-card small { margin-top: .2rem; color: #5B6270; font-size: .7rem; }
+
+/* The company the voice belongs to, linked through to the published work. */
+.wx-voice-client { margin-top: .55rem; font-size: .7rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.wx-voice-client a { color: #e31937; text-decoration: none; border-bottom: 1px solid rgba(227,25,55,.3); transition: border-color .15s ease; }
+.wx-voice-client a:hover { border-bottom-color: #e31937; }
+.wx-voice-client > span:not(.sr-only) { color: #8A90A0; }
+
+.wx-voices-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+.wx-voices-arrow { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; padding: .6rem 1.1rem; font-size: .78rem; font-weight: 600; letter-spacing: .02em; color: #1b2d5f; cursor: pointer; transition: border-color .15s ease, color .15s ease, opacity .15s ease; }
+.wx-voices-arrow:hover:not(:disabled) { border-color: #1b2d5f; }
+.wx-voices-arrow:focus-visible { outline: 2px solid #e31937; outline-offset: 2px; }
+/* Disabled at the ends of the range, but still readable: opacity alone on a
+   white background leaves the label below contrast minimums. */
+.wx-voices-arrow:disabled { opacity: .45; cursor: not-allowed; }
+.wx-voices-dots { display: flex; align-items: center; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.wx-voices-dot { display: block; width: .55rem; height: .55rem; border: 1px solid #c9cdd8; border-radius: 999px; background: #fff; padding: 0; cursor: pointer; transition: background-color .15s ease, border-color .15s ease; }
+.wx-voices-dot[aria-current='true'] { background: #e31937; border-color: #e31937; }
+.wx-voices-dot:focus-visible { outline: 2px solid #e31937; outline-offset: 2px; }
+/* The arrow is icon + word on desktop, but the word is the first thing to go
+   when the two controls and the dots have to share a phone's width. */
+@media (max-width: 479px) { .wx-voices-arrow-label { display: none; } .wx-voices-arrow { padding: .6rem .85rem; } }
+@media (prefers-reduced-motion: reduce) { .wx-voice-client a, .wx-voices-arrow, .wx-voices-dot { transition: none; } }
+
+.wx-template-hero { position: relative; min-height: 100svh; overflow: hidden; background: #0f1a35; color: #fff; }
+.wx-template-inner { position: relative; z-index: 1; display: flex; min-height: 100svh; flex-direction: column; align-items: center; padding: 5.5rem 1.5rem 3.5rem; text-align: center; }
+.wx-template-glow { position: absolute; top: 16%; left: 50%; width: min(70vw, 760px); height: 420px; transform: translateX(-50%); background: radial-gradient(circle, rgba(45,74,150,.6), transparent 68%); filter: blur(30px); pointer-events: none; }
+.wx-template-announcement { display: inline-flex; align-items: center; gap: .75rem; max-width: 100%; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(255,255,255,.06); padding: .6rem .85rem .6rem 1rem; color: rgba(255,255,255,.68); font-size: .7rem; }
+.wx-template-announcement a { color: #fff; font-weight: 700; }
+.wx-template-dot { color: var(--color-red-on-dark); }
+.wx-template-eyebrow { display: inline-flex; align-items: center; gap: .75rem; margin-top: 3.2rem; color: rgba(255,255,255,.72); font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; }
+.wx-template-eyebrow span { width: 2.5rem; height: 2px; background: #ed1738; }
+.wx-template-hero h1 { max-width: 900px; margin: 1.5rem 0; color: #fff !important; font-size: clamp(3rem, 7vw, 6.8rem); font-weight: 800; line-height: .98; letter-spacing: -.045em; }
+.wx-template-intro { max-width: 650px; color: rgba(255,255,255,.65); font-size: clamp(1rem, 1.6vw, 1.2rem); line-height: 1.65; }
+.wx-template-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: 2rem; }
+.wx-template-button { display: inline-flex; align-items: center; gap: 1.4rem; border: 1px solid rgba(255,255,255,.24); border-radius: .6rem; padding: .95rem 1.25rem; color: #fff; font-size: .85rem; font-weight: 700; transition: transform .2s, background-color .2s, border-color .2s; }
+/* Arrow glyph on the dark hero. #ed1738 reads at 3.92:1 here. */
+.wx-template-button span { color: var(--color-red-on-dark); font-size: 1.1rem; }
+.wx-template-button:hover { transform: translateY(-3px); border-color: var(--color-red-on-dark); background: rgba(255,255,255,.08); }
+/* Solid red fill carrying near-white text: 5.80:1, up from 4.14:1 on
+   #ed1738. */
+.wx-template-button-primary { border-color: #C91527; background: #C91527; }
+.wx-template-button-primary span { color: #fff; }
+.wx-template-visual { position: relative; left: auto; width: 100%; max-width: none; height: 390px; margin-top: 2.75rem; margin-bottom: -3.5rem; margin-left: 0; transform: none; }
+.wx-template-project { position: absolute; display: block; overflow: hidden; border: 0; border-radius: .75rem .75rem 0 0; box-shadow: 0 20px 55px rgba(0,0,0,.38); }
+.wx-template-project img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.wx-template-project span { position: absolute; right: .7rem; bottom: .6rem; left: .7rem; color: #fff; font-size: .65rem; text-align: left; text-shadow: 0 1px 8px #000; }
+.wx-template-project b { display: block; margin-top: .15rem; font-size: .85rem; }
+.wx-template-project { top: 0; left: 50%; width: calc(100% + 10rem); height: 100%; transform: translateX(-50%); }
+.wx-template-project:hover { z-index: 3; }
+.is-pressed { transform: translateY(1px) scale(.98); }
+.is-loading { cursor: wait; }
+.wx-offline-status { position: fixed; z-index: 100; inset: 0 0 auto; padding: .65rem 1rem; background: #1b2d5f; color: #fff; font-size: .8rem; font-weight: 700; text-align: center; }
+img { background: linear-gradient(90deg, #eef1f6 25%, #f8f9fb 37%, #eef1f6 63%); background-size: 400% 100%; animation: wx-skeleton 1.4s ease-in-out infinite; }
+img.is-loaded, img.is-image-missing { background: #eef1f6; }
+img.is-image-missing { opacity: .45; }
+@keyframes wx-skeleton { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+.wx-services-menu { width: 30rem; }
+.wx-services-menu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .15rem; border-top: 1px solid #eef0f3; padding-top: .35rem; }
+@media (max-width: 1100px) { .wx-services-menu { width: 27rem; } }
+@media (max-width: 700px) { .wx-template-inner { padding-top: 6rem; } .wx-template-announcement { font-size: .62rem; } .wx-template-announcement span:nth-child(3) { display: none; } .wx-template-eyebrow { margin-top: 2.5rem; } .wx-template-hero h1 { font-size: clamp(2.8rem, 13vw, 5rem); } .wx-template-visual { width: 100%; height: 230px; margin-top: 2.25rem; } .wx-template-project { left: 50%; width: calc(100% + 2rem); } }
