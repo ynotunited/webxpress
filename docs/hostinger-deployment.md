@@ -58,6 +58,7 @@ php artisan key:generate
 php artisan migrate --force
 php artisan db:seed --force
 php artisan storage:link
+php artisan filament:assets
 php artisan optimize
 ```
 
@@ -67,9 +68,10 @@ If SSH is not available, run these locally before uploading:
 composer install --no-dev --prefer-dist --optimize-autoloader
 npm ci
 npm run build
+php artisan filament:assets
 ```
 
-Then upload the whole project, including `vendor/` and `public/build/`, because Hostinger's Git integration does not run Composer or Vite for you. Do not rely on Git deployment alone: this repository intentionally ignores `vendor/` and `public/build/`, so a fresh checkout will not contain them. Either run the SSH steps above or upload those directories manually after every deploy.
+Then upload the whole project, including `vendor/`, `public/build/`, `public/css/filament/`, `public/js/filament/` and `public/fonts/filament/`, because Hostinger's Git integration does not run Composer, Vite or Filament asset publishing for you. Do not rely on Git deployment alone: this repository intentionally ignores those generated directories, so a fresh checkout will not contain them. Either run the SSH steps above or upload those directories manually after every deploy.
 
 Make `storage/`, `storage/framework/`, `storage/logs/` and `bootstrap/cache/` writable by the PHP user.
 
