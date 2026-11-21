@@ -1,0 +1,42 @@
+{
+  "_alpine-CgMDd_fQ.js": {
+    "file": "assets/alpine-CgMDd_fQ.js",
+    "name": "alpine"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Di4-kjzX.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CEuDwvZw.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_alpine-CgMDd_fQ.js"
+    ]
+  },
+  "resources/js/contact.js": {
+    "file": "assets/contact-CRxRz_mF.js",
+    "name": "contact",
+    "src": "resources/js/contact.js",
+    "isEntry": true
+  },
+  "resources/js/insights.js": {
+    "file": "assets/insights-BWBu1iIV.js",
+    "name": "insights",
+    "src": "resources/js/insights.js",
+    "isEntry": true
+  },
+  "resources/js/testimonials.js": {
+    "file": "assets/testimonials-T47LZpUr.js",
+    "name": "testimonials",
+    "src": "resources/js/testimonials.js",
+    "isEntry": true
+  }
+}
