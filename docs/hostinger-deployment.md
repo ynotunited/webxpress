@@ -1,24 +1,34 @@
 # Hostinger deployment for webxpresstech.com.ng
 
-This is the launch plan for Hostinger shared hosting with Cloudflare in front.
+This is the launch plan for Hostinger shared hosting. DNS is currently managed at Hostinger. Cloudflare is optional and can be added later.
 
-The application needs PHP 8.3, MySQL, writable storage, outbound SMTP, inbound IMAP, and one cron entry. Hostinger shared hosting can provide all of that. Cloudflare can provide DNS, proxy, HTTPS redirect and WAF. It cannot run the Laravel app itself.
+The application needs PHP 8.3, MySQL, writable storage, outbound SMTP, inbound IMAP, and one cron entry. Hostinger shared hosting can provide all of that. Cloudflare can add a CDN and WAF later, but it cannot run the Laravel app itself.
 
-## 1. Decide the Cloudflare mode
+## 1. DNS and email records at Hostinger
 
-Recommended launch setup:
+In hPanel, open **Domains -> DNS** for `webxpresstech.com.ng` and confirm:
 
-- Cloudflare DNS: proxy ON, orange cloud.
-- SSL/TLS encryption mode: **Full (strict)**. Hostinger's free SSL certificate stays installed on the origin.
-- Always Use HTTPS: ON.
-- Rocket Loader: OFF. The site has a strict CSP with nonces.
-- Email Address Obfuscation: OFF. It injects script that the CSP blocks.
-- Browser Integrity Check: ON is fine.
-- Cloudflare Email Routing: OFF. The Hostinger mailbox needs the MX records.
+- `A` record for `@` points to the IP address Hostinger assigned to this site. Use the value shown in hPanel, do not guess it.
+- `CNAME` record for `www` points to `webxpresstech.com.ng`, or use the Hostinger default if it already exists.
 
-If webhook source checks ever misbehave, temporarily set DNS to **DNS only** (grey cloud). That makes the origin see Paystack's real IP directly. Then fix trusted proxies before turning the orange cloud back on.
+For mail, open **Email -> Email Domain Settings** and let Hostinger add or fix the records. Because DNS is hosted at Hostinger, hPanel can do this automatically. It should result in:
 
-Do not use Flexible SSL. It lets Cloudflare talk HTTP to Hostinger, which causes redirect loops and leaks the origin traffic.
+- MX records for Hostinger mail
+- SPF TXT record for Hostinger
+- DKIM TXT record
+- DMARC TXT record
+
+Do not enable Cloudflare Email Routing at any point. The mailbox needs Hostinger's MX records.
+
+With DNS at Hostinger and no CDN in front, leave `TRUSTED_PROXIES` empty in `.env`. If Cloudflare is added later:
+
+- Set DNS proxy to ON, orange cloud.
+- Use SSL/TLS mode **Full (strict)**.
+- Turn on **Always Use HTTPS**.
+- Turn off Rocket Loader and Email Address Obfuscation.
+- Paste the current Cloudflare IP ranges into `TRUSTED_PROXIES` and keep `TRUSTED_HEADERS=30`.
+
+Do not use Flexible SSL with Cloudflare. It lets Cloudflare talk HTTP to Hostinger, which causes redirect loops and leaks the origin traffic.
 
 ## 2. Hostinger setup
 
