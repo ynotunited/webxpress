@@ -11,6 +11,10 @@ In hPanel, open **Domains -> DNS** for `webxpresstech.com.ng` and confirm:
 - `A` record for `@` points to the IP address Hostinger assigned to this site. Use the value shown in hPanel, do not guess it.
 - `CNAME` record for `www` points to `webxpresstech.com.ng`, or use the Hostinger default if it already exists.
 
+Important: Hostinger CDN is enabled automatically on many shared hosting plans. If `@` or `www` point to a `*.cdn.hstgr.net` hostname, disable the CDN before launch at **Websites -> Manage site -> Performance -> CDN -> Disable**. Wait a few minutes, then confirm the root and `www` records have been restored to the hosting plan's own A/CNAME records.
+
+Keep the CDN disabled unless trusted-proxy handling is added later. With the CDN on, Laravel sees Hostinger's proxy IP rather than the real visitor or Paystack IP, which breaks rate limits and the Paystack webhook allowlist. With the CDN off, `TRUSTED_PROXIES` stays empty.
+
 For mail, open **Email -> Email Domain Settings** and let Hostinger add or fix the records. Because DNS is hosted at Hostinger, hPanel can do this automatically. It should result in:
 
 - MX records for Hostinger mail
