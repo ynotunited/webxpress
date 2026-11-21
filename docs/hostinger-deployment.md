@@ -26,7 +26,7 @@ Do not use Flexible SSL. It lets Cloudflare talk HTTP to Hostinger, which causes
 2. Install a Hostinger SSL certificate for the domain.
 3. Set PHP version to **8.3** in hPanel.
 4. Create the MySQL database and user. Note the database name, username and password.
-5. Create an email mailbox used by the app. `hello@webxpresstech.com.ng` is the sender and team recipient. `inquiries@webxpresstech.com.ng` can be the shared reply mailbox. Using one mailbox for both is acceptable.
+5. Create one real mailbox: `hello@webxpresstech.com.ng`. It must be a mailbox with IMAP access, not a forwarder or alias. This app uses the same address for sending, Reply-To, team notifications and IMAP reply fetching, so keep `MAIL_FROM_ADDRESS`, `MAIL_INQUIRIES_TO`, `MAIL_USERNAME` and `IMAP_USERNAME` pointed at it.
 6. In the Hostinger email settings, publish the SPF and DKIM records. If Cloudflare manages DNS, add those records in Cloudflare, not only in hPanel.
 
 Hostinger mail endpoints, confirmed from Hostinger docs:
@@ -125,9 +125,8 @@ MAIL_INQUIRIES_TO="hello@webxpresstech.com.ng"
 IMAP_HOST=imap.hostinger.com
 IMAP_PORT=993
 IMAP_ENCRYPTION=ssl
-IMAP_USERNAME="inquiries@webxpresstech.com.ng"
+IMAP_USERNAME="hello@webxpresstech.com.ng"
 IMAP_PASSWORD="mailbox_password"
-IMAP_FOLDER=INBOX
 
 PAYSTACK_PUBLIC_KEY=pk_live_...
 PAYSTACK_SECRET_KEY=sk_live_...
