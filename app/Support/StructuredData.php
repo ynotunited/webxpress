@@ -187,7 +187,7 @@ final class StructuredData
     {
         $urls = [];
 
-        foreach (['linkedin_url', 'instagram_url', 'x_url'] as $key) {
+        foreach (['linkedin_url', 'instagram_url', 'facebook_url', 'x_url'] as $key) {
             $value = self::clean(site_setting($key));
 
             if ($value !== null) {

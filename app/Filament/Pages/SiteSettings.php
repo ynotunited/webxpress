@@ -44,6 +44,7 @@ class SiteSettings extends Page
             'inquiries_email' => SiteSetting::value('inquiries_email', config('mail.inquiries_to')),
             'linkedin_url' => SiteSetting::value('linkedin_url'),
             'instagram_url' => SiteSetting::value('instagram_url'),
+            'facebook_url' => SiteSetting::value('facebook_url'),
             'x_url' => SiteSetting::value('x_url'),
             'hero_headline' => SiteSetting::value('hero_headline', 'Web & SaaS Built for Africa'),
             'hero_subheadline' => SiteSetting::value('hero_subheadline', 'Fast, scalable digital solutions for businesses that can\'t wait for slow tech.'),
@@ -119,6 +120,7 @@ class SiteSettings extends Page
             Section::make('Social Links')->columns(3)->schema([
                 TextInput::make('linkedin_url')->label('LinkedIn')->url(),
                 TextInput::make('instagram_url')->label('Instagram')->url(),
+                TextInput::make('facebook_url')->label('Facebook')->url(),
                 TextInput::make('x_url')->label('X (Twitter)')->url(),
             ]),
             Section::make('Footer')->schema([
