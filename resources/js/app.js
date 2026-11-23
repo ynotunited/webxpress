@@ -1,8 +1,5 @@
 import './bootstrap';
-// The CSP build evaluates directive expressions without new Function(), so the
-// site keeps its strict script-src with no 'unsafe-eval'. Plain `alpinejs`
-// silently fails under that policy and leaves x-cloak content visible.
-import Alpine from '@alpinejs/csp';
+import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
 
 import './layout';
@@ -38,8 +35,9 @@ if (document.readyState === 'complete') {
     document.addEventListener('DOMContentLoaded', startAlpine, { once: true });
 }
 
-// The Services disclosure stays dependency-free deliberately: it works even
-// before Alpine starts and does not depend on a directive expression.
+// Alpine evaluates expressions with `unsafe-eval`, which is why the CSP allows
+// it only alongside `self` and nonces. Keep the Services disclosure
+// dependency-free so it still works if Alpine fails to start.
 document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.querySelector('[data-services-trigger]');
     const menu = document.querySelector('[data-services-menu]');

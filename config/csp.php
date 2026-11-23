@@ -67,7 +67,12 @@ return [
         'manifest-src' => ["'self'"],
         'media-src' => ["'none'"],
         'object-src' => ["'none'"],
-        'script-src' => ["'self'"],
+        // Alpine 3 evaluates directive expressions with new Function(). This is
+        // the one relaxation the public site needs; scripts still have to come
+        // from 'self' or carry a per-request nonce, so injected <script> tags
+        // remain blocked. Without this, x-cloak is removed before Alpine's
+        // directives run and every hidden panel renders at once.
+        'script-src' => ["'self'", "'unsafe-eval'"],
         'style-src' => ["'self'"],
         'style-src-attr' => ["'unsafe-inline'"],
         'worker-src' => ["'self'"],
