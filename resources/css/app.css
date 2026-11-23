@@ -1025,7 +1025,7 @@ img.is-loaded, img.is-image-missing { background: #eef1f6; }
 img.is-image-missing { opacity: .45; }
 /* Logo files are transparent. The loading skeleton above would otherwise leave
    a grey rectangle permanently behind them once is-loaded is added. */
-img[src*="logo" i], img[src*="brand" i], img[src*="favicon" i] { background: none !important; animation: none; }
+img[src*="logo" i], img[src*="brand" i], img[src*="favicon" i], img[src*="signature" i], img[src*="/clients/" i] { background: none !important; animation: none; }
 @keyframes wx-skeleton { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
 .wx-services-menu { width: 30rem; }
 .wx-services-menu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .15rem; border-top: 1px solid #eef0f3; padding-top: .35rem; }
