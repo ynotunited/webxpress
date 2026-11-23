@@ -1,4 +1,15 @@
 {{-- <footer> is already the contentinfo landmark; the explicit role is redundant. --}}
+@php
+    $footerPhone = site_setting('contact_phone');
+    $footerWhatsapp = site_setting('whatsapp_number');
+    $footerEmail = site_setting('contact_email', 'hello@webxpresstech.com.ng');
+    $footerSocials = [
+        'LinkedIn' => site_setting('linkedin_url'),
+        'Instagram' => site_setting('instagram_url'),
+        'Facebook' => site_setting('facebook_url'),
+        'X' => site_setting('x_url'),
+    ];
+@endphp
 <footer class="wx-cinematic-footer">
     <div class="wx-footer-marquee" aria-hidden="true">
         <div>Clarity that moves business forward <span>✦</span> Digital systems that work harder <span>✦</span> Built for ambitious teams <span>✦</span> Clarity that moves business forward <span>✦</span> Digital systems that work harder <span>✦</span></div>
@@ -24,6 +35,23 @@
             @endforeach
             <a href="mailto:hello@webxpresstech.com.ng" class="wx-footer-pill" @if (request()->routeIs('contact')) aria-current="page" @endif>Contact</a>
         </nav>
+
+        <div class="wx-footer-contact">
+            @if ($footerPhone)
+                <a href="tel:{{ preg_replace('/\s+/', '', $footerPhone) }}" class="wx-footer-pill">Call {{ $footerPhone }}</a>
+            @endif
+            @if ($footerWhatsapp && $footerWaUrl = whatsapp_url($footerWhatsapp))
+                <a href="{{ $footerWaUrl }}" class="wx-footer-pill" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            @endif
+            @if ($footerEmail)
+                <a href="mailto:{{ $footerEmail }}" class="wx-footer-pill">{{ $footerEmail }}</a>
+            @endif
+            @foreach ($footerSocials as $footerSocialLabel => $footerSocialUrl)
+                @if ($footerSocialUrl)
+                    <a href="{{ $footerSocialUrl }}" class="wx-footer-pill" target="_blank" rel="noopener noreferrer">{{ $footerSocialLabel }}</a>
+                @endif
+            @endforeach
+        </div>
     </div>
 
     <div class="wx-footer-bottom">

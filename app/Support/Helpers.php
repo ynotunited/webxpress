@@ -11,6 +11,29 @@ if (! function_exists('site_setting')) {
     }
 }
 
+if (! function_exists('whatsapp_url')) {
+    /**
+     * Turn a saved WhatsApp number into a wa.me link. Accepts an existing
+     * wa.me URL as well so an editor can paste either form.
+     */
+    function whatsapp_url(string $number): ?string
+    {
+        $number = trim($number);
+
+        if ($number === '') {
+            return null;
+        }
+
+        if (preg_match('#^https?://(?:api\.)?wa\.me/#i', $number)) {
+            return $number;
+        }
+
+        $digits = preg_replace('/\D+/', '', $number);
+
+        return $digits !== '' ? 'https://wa.me/'.$digits : null;
+    }
+}
+
 if (! function_exists('site_page')) {
     function site_page(string $slug): ?Page
     {
