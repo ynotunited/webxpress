@@ -373,19 +373,20 @@
          ============================================= --}}
     <section class="bg-white pb-20 lg:pb-28">
         <div class="container-wx">
-            <div class="relative overflow-hidden rounded-[2rem] bg-navy px-8 py-14 text-center animate-on-scroll lg:px-16 lg:py-20" style="background-color:#1B2D5F">
-                <div class="absolute inset-x-0 top-0 h-32 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0))]" aria-hidden="true"></div>
-                <div class="relative">
-                    <p class="label-sm text-white/60">Your project could be the next one here</p>
-                    <h2 class="mx-auto mt-4 max-w-3xl font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-white lg:text-5xl">
-                        Tell us the number you need to move.
-                    </h2>
-                    <p class="mx-auto mt-5 max-w-xl text-lg leading-8 text-white/70">
-                        Send the problem in plain language. We will tell you what it takes, what it costs, and whether we are the right team for it.
-                    </p>
-                    <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div class="animate-on-scroll border-t border-gray-200 pt-12 lg:pt-16">
+                <p class="label-sm">Your project could be the next one here</p>
+                <div class="mt-4 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-12">
+                    <div>
+                        <h2 class="max-w-3xl font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-navy lg:text-5xl">
+                            Tell us the number you need to move.
+                        </h2>
+                        <p class="mt-5 max-w-xl text-lg leading-8 text-gray-600">
+                            Send the problem in plain language. We will tell you what it takes, what it costs, and whether we are the right team for it.
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-3 sm:flex-row lg:justify-end">
                         <a href="{{ route('contact') }}" class="btn btn-primary rounded-full px-7">Start a conversation</a>
-                        <a href="{{ route('services.index') }}" class="btn btn-ghost-white rounded-full px-7">See our services</a>
+                        <a href="{{ route('services.index') }}" class="btn btn-ghost rounded-full px-7">See our services</a>
                     </div>
                 </div>
             </div>
