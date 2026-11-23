@@ -1,85 +1,110 @@
 # Hostinger deployment for webxpresstech.com.ng
 
-This documents the live setup: Hostinger shared hosting runs the Laravel app, DNS and mail are at Hostinger, and SSH is used for release commands. Cloudflare is not in front of the site at launch.
+This is the launch plan for Hostinger shared hosting. DNS is currently managed at Hostinger. Cloudflare is optional and can be added later.
 
-The app needs PHP 8.2 or newer, MySQL, writable storage, outbound SMTP, inbound IMAP and one cron entry. The live account runs PHP 8.2.36, which satisfies the project's `^8.2` requirement.
+The application needs PHP 8.2, MySQL, writable storage, outbound SMTP, inbound IMAP, and one cron entry. Hostinger shared hosting can provide all of that. Cloudflare can add a CDN and WAF later, but it cannot run the Laravel app itself.
 
-## 1. DNS and mail at Hostinger
+## 1. DNS and email records at Hostinger
 
-In hPanel, **Domains -> DNS** for `webxpresstech.com.ng`:
+In hPanel, open **Domains -> DNS** for `webxpresstech.com.ng` and confirm:
 
-- `A` for `@` -> `212.1.211.49`
-- `CNAME` for `www` -> `webxpresstech.com.ng`
-- MX `mx1.hostinger.com` priority 5, `mx2.hostinger.com` priority 10
-- SPF TXT `v=spf1 include:_spf.mail.hostinger.com ~all`
-- DKIM CNAMEs for `hostingermail-a/b/c._domainkey`
-- DMARC TXT `v=DMARC1; p=none`
-- `autoconfig` and `autodiscover` CNAMEs
+- `A` record for `@` points to the IP address Hostinger assigned to this site. Use the value shown in hPanel, do not guess it.
+- `CNAME` record for `www` points to `webxpresstech.com.ng`, or use the Hostinger default if it already exists.
 
-Hostinger CDN is **off**. With it on, `@` and `www` point to `*.cdn.hstgr.net`, Laravel sees the CDN IP instead of the visitor or Paystack, and the webhook IP allowlist breaks. Keep `TRUSTED_PROXIES` empty.
+Important: Hostinger CDN is enabled automatically on many shared hosting plans. If `@` or `www` point to a `*.cdn.hstgr.net` hostname, disable the CDN before launch at **Websites -> Manage site -> Performance -> CDN -> Disable**. Wait a few minutes, then confirm the root and `www` records have been restored to the hosting plan's own A/CNAME records.
 
-In **Email -> Email Domain Settings**, use Hostinger's automatic fix for MX, SPF, DKIM and DMARC. Do not enable Cloudflare Email Routing. Do not create a second SPF record.
+Keep the CDN disabled unless trusted-proxy handling is added later. With the CDN on, Laravel sees Hostinger's proxy IP rather than the real visitor or Paystack IP, which breaks rate limits and the Paystack webhook allowlist. With the CDN off, `TRUSTED_PROXIES` stays empty.
 
-One real mailbox is required: `hello@webxpresstech.com.ng`. It must be an IMAP mailbox, not a forwarder or alias. It is used for SMTP sending, Reply-To, team notifications and IMAP reply fetching.
+For mail, open **Email -> Email Domain Settings** and let Hostinger add or fix the records. Because DNS is hosted at Hostinger, hPanel can do this automatically. It should result in:
 
-Hostinger mail endpoints:
+- MX records for Hostinger mail
+- SPF TXT record for Hostinger
+- DKIM TXT record
+- DMARC TXT record
+
+Do not enable Cloudflare Email Routing at any point. The mailbox needs Hostinger's MX records.
+
+With DNS at Hostinger and no CDN in front, leave `TRUSTED_PROXIES` empty in `.env`. If Cloudflare is added later:
+
+- Set DNS proxy to ON, orange cloud.
+- Use SSL/TLS mode **Full (strict)**.
+- Turn on **Always Use HTTPS**.
+- Turn off Rocket Loader and Email Address Obfuscation.
+- Paste the current Cloudflare IP ranges into `TRUSTED_PROXIES` and keep `TRUSTED_HEADERS=30`.
+
+Do not use Flexible SSL with Cloudflare. It lets Cloudflare talk HTTP to Hostinger, which causes redirect loops and leaks the origin traffic.
+
+## 2. Hostinger setup
+
+1. Point `webxpresstech.com.ng` and `www.webxpresstech.com.ng` at the Hostinger site.
+2. Install a Hostinger SSL certificate for the domain.
+3. Set PHP version to **8.2** in hPanel.
+4. Create the MySQL database and user. Note the database name, username and password.
+5. Create one real mailbox: `hello@webxpresstech.com.ng`. It must be a mailbox with IMAP access, not a forwarder or alias. This app uses the same address for sending, Reply-To, team notifications and IMAP reply fetching, so keep `MAIL_FROM_ADDRESS`, `MAIL_INQUIRIES_TO`, `MAIL_USERNAME` and `IMAP_USERNAME` pointed at it.
+6. In the Hostinger email settings, publish the SPF and DKIM records. If Cloudflare manages DNS, add those records in Cloudflare, not only in hPanel.
+
+Hostinger mail endpoints, confirmed from Hostinger docs:
 
 | Purpose | Host | Port | Security |
 | --- | --- | --- | --- |
 | IMAP inbox | `imap.hostinger.com` | 993 | SSL/TLS |
 | SMTP send | `smtp.hostinger.com` | 465 | SSL/TLS |
 
-SSL is installed for both `webxpresstech.com.ng` and `www.webxpresstech.com.ng`.
+Hostinger shared hosting has sending limits. If the site later sends more than the plan allows, switch `MAIL_*` to Resend SMTP and keep Hostinger IMAP for replies.
 
-## 2. How the code is deployed
+## 3. Put the code on Hostinger
 
-Hostinger's Git integration pulls the selected branch into:
+Preferred layout is the Laravel project outside the web root, with the domain document root pointing at `public/`.
 
-```text
-/home/u655735127/domains/webxpresstech.com.ng/public_html
-```
+If the Hostinger plan will not let you change the document root, upload the project into the domain directory and keep the committed root `.htaccess`. It rewrites every request into `public/`. The Laravel `.htaccess` inside `public/` handles pretty URLs from there.
 
-`public_html` in the home directory is a symlink to that directory. It is the document root.
-
-Hostinger Git **does not run a build step**. It only copies committed files. For that reason the live branch `deploy/hostinger-webxpresstech` commits the generated directories:
-
-- `vendor/` from `composer install --no-dev --prefer-dist --optimize-autoloader`
-- `public/build/` from `npm ci && npm run build`
-- `public/css/filament/`, `public/js/filament/`, `public/fonts/filament/` from `php artisan filament:assets`
-
-The root `.htaccess` rewrites every request into `public/`, and `public/.htaccess` handles Laravel pretty URLs. The root `.htaccess` also denies direct access to `.env` and `.git`.
-
-`public/storage` cannot be created by `php artisan storage:link` because Hostinger disables `exec()`. Create it manually:
+If SSH is available:
 
 ```sh
-cd /home/u655735127/domains/webxpresstech.com.ng/public_html
-ln -s ../storage/app/public public/storage
+cd /home/uXXXXXXX/domains/webxpresstech.com.ng
+git clone <your-project-repo> .
+composer install --no-dev --prefer-dist --optimize-autoloader
+npm ci
+npm run build
+cp .env.example .env
+# edit .env, then:
+php artisan key:generate
+php artisan migrate --force
+php artisan db:seed --force
+php artisan storage:link
+php artisan filament:assets
+php artisan optimize
 ```
 
-Make `storage/`, `storage/framework/`, `storage/logs/` and `bootstrap/cache/` writable:
+If SSH is not available, run these locally before uploading:
 
 ```sh
-chmod -R 775 storage bootstrap/cache
+composer install --no-dev --prefer-dist --optimize-autoloader
+npm ci
+npm run build
+php artisan filament:assets
 ```
 
-## 3. Production `.env`
+Then upload the whole project, including `vendor/`, `public/build/`, `public/css/filament/`, `public/js/filament/` and `public/fonts/filament/`, because Hostinger's Git integration does not run Composer, Vite or Filament asset publishing for you. Do not rely on Git deployment alone: this repository intentionally ignores those generated directories, so a fresh checkout will not contain them. Either run the SSH steps above or upload those directories manually after every deploy.
 
-Never commit this file. If it is generated on Windows, convert line endings on the server before using it:
+Make `storage/`, `storage/framework/`, `storage/logs/` and `bootstrap/cache/` writable by the PHP user.
 
-```sh
-sed -i 's/\r$//' .env
-```
+After upload, check `https://webxpresstech.com.ng/.env`. It must not be downloadable.
 
-Key production values:
+## 4. Production `.env`
+
+Never commit this file. Fill in the real values on the server.
 
 ```dotenv
 APP_NAME="Webxpress Technologies"
 APP_ENV=production
-APP_KEY=base64:...
+APP_KEY=
 APP_DEBUG=false
 APP_URL=https://webxpresstech.com.ng
 
-TRUSTED_PROXIES=
+# DNS is at Hostinger and the CDN is off, so no proxy is trusted.
+# If Cloudflare is added later, paste its current IPv4/IPv6 ranges here.
+TRUSTED_PROXIES=""
 TRUSTED_HEADERS=30
 FORCE_HTTPS=true
 SESSION_SECURE_COOKIE=true
@@ -91,9 +116,9 @@ LOG_LEVEL=info
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=u655735127_webxpress
-DB_USERNAME=u655735127_webxpresstec
-DB_PASSWORD="..."
+DB_DATABASE=your_hostinger_db
+DB_USERNAME=your_hostinger_user
+DB_PASSWORD="your_db_password"
 
 SESSION_DRIVER=database
 CACHE_STORE=database
@@ -105,125 +130,105 @@ MAIL_SCHEME=smtps
 MAIL_HOST=smtp.hostinger.com
 MAIL_PORT=465
 MAIL_USERNAME="hello@webxpresstech.com.ng"
-MAIL_PASSWORD="..."
+MAIL_PASSWORD="mailbox_password"
 MAIL_FROM_ADDRESS="hello@webxpresstech.com.ng"
 MAIL_FROM_NAME="Webxpress Technologies"
 MAIL_INQUIRIES_TO="hello@webxpresstech.com.ng"
-MAIL_INQUIRIES_AUTO_ACK=true
 
 IMAP_HOST=imap.hostinger.com
 IMAP_PORT=993
 IMAP_ENCRYPTION=ssl
-IMAP_VALIDATE_CERT=true
 IMAP_USERNAME="hello@webxpresstech.com.ng"
-IMAP_PASSWORD="..."
+IMAP_PASSWORD="mailbox_password"
 
 PAYSTACK_PUBLIC_KEY=pk_live_...
 PAYSTACK_SECRET_KEY=sk_live_...
 PAYSTACK_BASE_URL=https://api.paystack.co
+PAYSTACK_ALERT_EMAIL="hello@webxpresstech.com.ng"
+PAYSTACK_NOTIFY_ON_PAYMENT=true
 
 ADMIN_NAME="Webxpress Admin"
-ADMIN_EMAIL=admin@webxpresstech.com.ng
-ADMIN_PASSWORD="..."
-ADMIN_PATH=panel-1dulps1jhfwot6akvo5iw5ei
+ADMIN_EMAIL="your_real_admin_email"
+ADMIN_PASSWORD="a-long-random-password"
+ADMIN_PATH="a-random-panel-path"
 
 CSP_ENABLED=true
 CSP_REPORT_ONLY=false
 ALLOW_DESTRUCTIVE_COMMANDS=false
 ```
 
-`MAIL_SCHEME` must be `smtps`, not `ssl`. Symfony Mailer only supports `smtp` and `smtps`. `FILESYSTEM_DISK` must be `public` so Filament uploads resolve through `asset('storage/...')`.
-
-`FORCE_HTTPS` performs a real redirect and reads from config, so it survives `config:cache`.
-
-## 4. Release commands
-
-Run these over SSH in the deploy directory:
+Generate `ADMIN_PATH` with:
 
 ```sh
-cd /home/u655735127/domains/webxpresstech.com.ng/public_html
-php artisan config:clear
-php artisan migrate --force
-php artisan db:seed --force
-php artisan optimize
+php artisan tinker --execute="echo 'panel-'.Str::random(24);"
 ```
 
-`php artisan db:seed --force` is safe to rerun. The seeders only fill missing rows; they do not overwrite live content.
+After writing `.env`, run:
 
-Never run `migrate:fresh`, `db:wipe` or `migrate:reset` on this server.
+```sh
+php artisan key:generate
+php artisan config:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+`FORCE_HTTPS` now performs a real redirect. It reads from config, so it survives `config:cache`. `TRUSTED_HEADERS=30` trusts `X-Forwarded-For`, `Host`, `Proto` and `Port`.
 
 ## 5. Cron
 
-SSH `crontab` is disabled on this Hostinger account. Add the job in hPanel -> **Advanced -> Cron Jobs** with all five fields set to `*`:
+Add one cron job in hPanel, every minute:
 
-```text
-Minute:   *
-Hour:     *
-Day:      *
-Month:    *
-Weekday:  *
+```sh
+* * * * * /usr/bin/php /home/u655735127/domains/webxpresstech.com.ng/public_html/artisan schedule:run
 ```
 
-Command:
-
-```text
-/usr/bin/php /home/u655735127/domains/webxpresstech.com.ng/public_html/artisan schedule:run
-```
+Replace the path with the actual install directory if it differs. If hPanel rejects a raw command, put that line in a `.sh` file and schedule the shell file as a custom cron job.
 
 The scheduler then runs:
 
 - queue worker every minute
-- `inquiries:fetch-replies` every five minutes
-- `deals:reconcile-payments` every ten minutes
+- IMAP reply fetch every five minutes
+- Paystack payment reconciliation every ten minutes
 
 ## 6. Paystack
 
-Register this webhook in the live Paystack dashboard:
+Register this webhook URL in Paystack:
 
 ```text
 https://webxpresstech.com.ng/webhooks/paystack
 ```
 
-Use live keys. The webhook IP allowlist stays enabled. There is no reverse proxy in front of the origin, so Laravel sees Paystack's real IP directly.
+Use live keys. Leave the IP whitelist empty: Hostinger shared hosting has no stable origin IP to allowlist, and the webhook verifies Paystack's HMAC signature. `TRUSTED_PROXIES` stays empty because Cloudflare is not in front of the site.
 
-After saving, use Paystack's webhook test button and confirm the event appears in `webhook_events` and the admin panel.
+The current Paystack dashboard has no test button. Verify the endpoint by sending a locally signed event and confirm that one `webhook_events` row is recorded, then delete that row.
 
-## 7. Future deploys
+## 7. DNS records at Hostinger
 
-1. Merge changes into `deploy/hostinger-webxpresstech`.
-2. Rebuild locally: `composer install --no-dev --prefer-dist --optimize-autoloader`, `npm ci`, `npm run build`, `php artisan filament:assets`.
-3. Force-add the generated directories, commit and push.
-4. Wait for Hostinger Git to redeploy.
-5. Re-upload `.env` if Hostinger removed it, then run `php artisan migrate --force`, `php artisan db:seed --force` and `php artisan optimize`.
+- `A` or `CNAME` for `@` and `www` pointing to the Hostinger site.
+- Hostinger MX records for the mailbox.
+- SPF TXT and DKIM TXT records from Hostinger Email.
+- Do not create duplicate SPF records. Merge if Hostinger and another sender both need to be authorised.
+- Cloudflare is not active. Do not enable Cloudflare Email Routing.
 
-Back up `.env` before every redeploy.
+## 8. Status page
 
-## 8. Verification
+Deploy the `status/` directory separately from the Laravel app. It is static HTML/CSS/JS with no build step. Cloudflare Pages works, but because DNS is at Hostinger you must add the `status` CNAME that Cloudflare gives you in hPanel; putting the main domain behind Cloudflare is not required.
 
-- `https://webxpresstech.com.ng/up` returns `ok`.
-- Apex and `www` both load over HTTPS.
-- `/.env` is not downloadable.
-- Contact form sends real email and creates an inquiry in the panel.
+Add an external monitor such as UptimeRobot for `https://webxpresstech.com.ng`. Keep the monitor outside Hostinger so it can detect an outage of the hosting itself.
+
+## 9. Launch verification
+
+Before pointing real traffic at the domain:
+
+- `https://webxpresstech.com.ng/up` returns OK.
+- Homepage, work, services, insights, contact and admin login all load over HTTPS.
+- `/.env` is not accessible.
+- Contact form sends a real email and creates an inquiry in the panel.
 - Admin login works at the random `ADMIN_PATH`.
-- SMTP test sends to `hello@webxpresstech.com.ng`.
-- `php artisan inquiries:fetch-replies --simulate` connects to IMAP without an error.
-- Cron has run and `storage/logs` shows no scheduler errors.
-- Paystack live webhook test records a payment event.
-- Social preview uses the 1200 x 630 image at `public/images/og/webxpress-preview.png`.
+- Paystack live webhook is saved and a signed test event records one `webhook_events` row.
+- `php artisan inquiries:fetch-replies` connects to IMAP without an error.
+- Cron has run at least once and `storage/logs` shows no scheduler errors.
+- Social preview uses `og:image` with the 1200 x 630 image.
 
-## 9. Optional later: Cloudflare
-
-If Cloudflare is added later:
-
-- DNS proxy ON, orange cloud.
-- SSL/TLS mode **Full (strict)**.
-- **Always Use HTTPS** ON.
-- Rocket Loader OFF and Email Address Obfuscation OFF.
-- Paste current Cloudflare IPv4/IPv6 ranges into `TRUSTED_PROXIES`, keep `TRUSTED_HEADERS=30`.
-- Leave Hostinger MX records in place. Do not enable Cloudflare Email Routing.
-
-Never use Flexible SSL. It causes redirect loops and leaves origin traffic unencrypted.
-
-## 10. Status page
-
-Deploy `status/` separately to Cloudflare Pages, output directory `status`, no build command. Add `status.webxpresstech.com.ng` as the Pages domain and an external monitor such as UptimeRobot for the main site.
+Do not run `migrate:fresh`, `db:wipe` or `migrate:reset` on this server. The production safety guard blocks them unless explicitly overridden.
