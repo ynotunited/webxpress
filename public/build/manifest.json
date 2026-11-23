@@ -1,6 +1,6 @@
 {
-  "_alpine-CgMDd_fQ.js": {
-    "file": "assets/alpine-CgMDd_fQ.js",
+  "_alpine-CRIPInl4.js": {
+    "file": "assets/alpine-CRIPInl4.js",
     "name": "alpine"
   },
   "resources/css/app.css": {
@@ -13,12 +13,12 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-CEuDwvZw.js",
+    "file": "assets/app-iA7GsQxC.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_alpine-CgMDd_fQ.js"
+      "_alpine-CRIPInl4.js"
     ]
   },
   "resources/js/contact.js": {

@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Auth\AdminLogin;
 use App\Filament\Auth\AdminRequestPasswordReset;
+use App\Filament\AvatarProviders\InitialsAvatarProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,6 +33,10 @@ class AdminPanelProvider extends PanelProvider
             // moving the panel cannot quietly desynchronise them.
             ->path(admin_path())
             ->login(AdminLogin::class)
+            // Filament defaults to ui-avatars.com, which the admin CSP blocks and
+            // which would leak the admin name to a third party. Draw initials
+            // locally as a data: SVG instead; img-src already allows data:.
+            ->defaultAvatarProvider(InitialsAvatarProvider::class)
             // Self-service recovery and verification:
             //
             //   - passwordReset() mints tokens through Laravel's broker, which

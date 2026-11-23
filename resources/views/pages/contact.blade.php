@@ -62,11 +62,12 @@
                         class="flex items-start gap-3 max-w-[88%]"
                     >
                         {{-- Avatar --}}
-                        {{-- Intrinsic dimensions so the avatar does not reflow when the logo
-                             decodes. Decorative: the accessible name comes from the
-                             "Webxpress says:" sr-only prefix, not the image. --}}
-                        <div class="w-8 h-8 rounded-full bg-navy-800 flex items-center justify-center shrink-0 mt-0.5">
-                            <img src="{{ brand_logo('white') }}" class="h-3.5 w-auto opacity-90" alt="" aria-hidden="true" width="38" height="14" decoding="async">
+                        {{-- The logo files are transparent, so no coloured avatar circle is
+                             needed. Use the coloured mark directly on the white bubble.
+                             Decorative: the accessible name comes from the "Webxpress
+                             says:" sr-only prefix, not the image. --}}
+                        <div class="flex items-center shrink-0 mt-1">
+                            <img src="{{ brand_logo('colored') }}" class="h-4 w-auto" alt="" aria-hidden="true" width="150" height="38" decoding="async">
                         </div>
                         {{-- Bubble --}}
                         <div class="bg-white rounded-2xl rounded-tl-md px-5 py-4 shadow-[0_1px_3px_rgba(0,0,0,.06)] border border-gray-100">
@@ -105,8 +106,8 @@
                 x-transition:enter-end="opacity-100"
                 class="flex items-start gap-3"
             >
-                <div class="w-8 h-8 rounded-full bg-navy-800 flex items-center justify-center shrink-0 mt-0.5">
-                    <img src="{{ brand_logo('white') }}" class="h-3.5 w-auto opacity-90" alt="" aria-hidden="true" width="38" height="14" decoding="async">
+                <div class="flex items-center shrink-0 mt-1">
+                    <img src="{{ brand_logo('colored') }}" class="h-4 w-auto" alt="" aria-hidden="true" width="150" height="38" decoding="async">
                 </div>
                 <div class="bg-white rounded-2xl rounded-tl-md px-5 py-4 shadow-[0_1px_3px_rgba(0,0,0,.06)] border border-gray-100">
                     <div class="flex items-center gap-1.5" aria-label="Typing">
