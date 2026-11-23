@@ -103,7 +103,10 @@ return [
     | before assuming this is still unavoidable.
     */
     'admin' => [
-        'script-src' => ["'self'", "'unsafe-inline'"],
+        // Livewire 3 evaluates dynamically generated expressions with
+        // AsyncFunction. Without 'unsafe-eval' its click handlers never run,
+        // which leaves every Filament action button stuck in a loading state.
+        'script-src' => ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         'style-src' => ["'self'", "'unsafe-inline'"],
     ],
 
